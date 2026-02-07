@@ -1,10 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
   const [htmlCode, setHtmlCode] = useState('');
-  const [status, setStatus] = useState('Ready to convert...');
+  const [status, setStatus] = useState('Loading library...');
   const [isConverting, setIsConverting] = useState(false);
+  const [libraryLoaded, setLibraryLoaded] = useState(false);
+
+  useEffect(() => {
+    // Load dom-to-pptx library dynamically
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/dom-to-pptx@1.0.0/dist/dom-to-pptx.bundle.js';
+    script.async = true;
+    script.onload = () => {
+      setLibraryLoaded(true);
+      setStatus('✅ Ready to convert...');
+    };
+    script.onerror = () => {
+      setStatus('❌ Failed to load conversion library');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
 
   const convertToSlide = async () => {
     if (!htmlCode.trim()) {
@@ -87,7 +109,7 @@ function App() {
 
         <button 
           onClick={convertToSlide}
-          disabled={isConverting}
+          disabled={isConverting || !libraryLoaded}
           className="convert-button"
         >
           {isConverting ? 'Converting...' : 'Convert to PowerPoint'}
