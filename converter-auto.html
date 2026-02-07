@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Converter</title>
+    <script type="module">
+        import { exportToPptx } from './node_modules/dom-to-pptx/dist/dom-to-pptx.mjs';
+
+        async function autoConvert() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Starting conversion...';
+
+            try {
+                // Load slide 1
+                const slide1Response = await fetch('slide1.html');
+                const slide1HTML = await slide1Response.text();
+                
+                // Load slide 2
+                const slide2Response = await fetch('slide2.html');
+                const slide2HTML = await slide2Response.text();
+
+                // Create temporary containers
+                const container1 = document.createElement('div');
+                container1.innerHTML = slide1HTML;
+                container1.style.position = 'absolute';
+                container1.style.left = '-9999px';
+                document.body.appendChild(container1);
+
+                const container2 = document.createElement('div');
+                container2.innerHTML = slide2HTML;
+                container2.style.position = 'absolute';
+                container2.style.left = '-9999px';
+                document.body.appendChild(container2);
+
+                statusDiv.textContent += '\nLoaded HTML files';
+
+                // Wait for fonts and styles to load
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Find slide containers
+                const slideElement1 = container1.querySelector('.slide-container');
+                const slideElement2 = container2.querySelector('.slide-container');
+
+                if (!slideElement1 || !slideElement2) {
+                    throw new Error('Could not find .slide-container elements');
+                }
+
+                statusDiv.textContent += '\nFound slide containers';
+                statusDiv.textContent += '\nConverting Slide 1...';
+
+                // Convert slide 1
+                await exportToPptx(slideElement1, {
+                    fileName: 'CodeXBit_Slide1.pptx',
+                    slideWidth: 10,
+                    slideHeight: 5.625
+                });
+
+                statusDiv.textContent += '\n✓ Slide 1 converted';
+                statusDiv.textContent += '\nConverting Slide 2...';
+
+                // Convert slide 2
+                await exportToPptx(slideElement2, {
+                    fileName: 'CodeXBit_Slide2.pptx',
+                    slideWidth: 10,
+                    slideHeight: 5.625
+                });
+
+                statusDiv.textContent += '\n✓ Slide 2 converted';
+                statusDiv.textContent += '\n\n✅ Success! Files downloaded.';
+
+                // Cleanup
+                document.body.removeChild(container1);
+                document.body.removeChild(container2);
+
+            } catch (error) {
+                statusDiv.textContent += '\n\n❌ Error: ' + error.message;
+                console.error(error);
+            }
+        }
+
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            setTimeout(autoConvert, 500);
+        });
+    </script>
+</head>
+<body>
+    <h1>Auto Converting...</h1>
+    <pre id="status">Initializing...</pre>
+</body>
+</html>

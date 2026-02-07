@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Button</title>
+</head>
+<body>
+    <button onclick="testFunction()">Test Button</button>
+    <div id="output">Not clicked yet</div>
+    
+    <script type="module">
+        function testFunction() {
+            document.getElementById('output').textContent = 'Button works!';
+            console.log('Button clicked!');
+        }
+        
+        // Expose globally
+        window.testFunction = testFunction;
+    </script>
+</body>
+</html>
