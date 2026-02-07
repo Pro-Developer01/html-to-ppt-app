@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "postinstall": "cp node_modules/dom-to-pptx/dist/dom-to-pptx.bundle.js public/ || true",
     "convert": "node convert.js",
     "serve": "node server.js"
   },

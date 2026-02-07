@@ -8,16 +8,16 @@ function App() {
   const [libraryLoaded, setLibraryLoaded] = useState(false);
 
   useEffect(() => {
-    // Load dom-to-pptx library dynamically
+    // Load dom-to-pptx library dynamically from public folder
     const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/dom-to-pptx@1.0.0/dist/dom-to-pptx.bundle.js';
+    script.src = '/dom-to-pptx.bundle.js';
     script.async = true;
     script.onload = () => {
       setLibraryLoaded(true);
       setStatus('✅ Ready to convert...');
     };
     script.onerror = () => {
-      setStatus('❌ Failed to load conversion library');
+      setStatus('❌ Failed to load conversion library. Please refresh the page.');
     };
     document.body.appendChild(script);
 
